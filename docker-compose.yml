@@ -1,7 +1,7 @@
 version: "3.9"
 services:
     web:
-        image: edmilsonexpedito2305/byecar-image:latest
+        image: edmilsonexpedito2305/byecar-image:v2
         container_name: web
         build:
             context: .
