@@ -1,0 +1,32 @@
+name: Build and Push Image to DockerHub
+on:
+    push:
+        branches: [develop]
+
+jobs:
+    build-and-push:
+        name: Build and Push to DockerHub
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Login to DockerHub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Automatic Tagging of Releases
+              id: increment-git-tag
+              run: |
+                  bash ./build/git_update.sh -v minor
+
+            - name: Build and Push Image to DockerHub
+              id: build-and-push
+              env:
+                  IMAGE_NAME: "edmilsonexpedito2305/byecar-image"
+                  IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
+              run: |
+                  docker build -t $IMAGE_NAME:$IMAGE_TAG docker/Dockerfile
+                  docker push $IMAGE_NAME:$IMAGE_TAG
