@@ -17,10 +17,14 @@ jobs:
                   username: ${{ secrets.DOCKERHUB_USERNAME }}
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+            - name: Set Docker Buildx
+              uses: docker/setup-buildx-action@v1
+
             - name: Automatic Tagging of Releases
               id: increment-git-tag
               run: |
                   bash ./build/git_update.sh -v minor
+                  echo "GIT_TAG=${{ steps.increment-git-tag.outputs.git-tag }}" >> $GITHUB_ENV
 
             - name: Build and Push Image to DockerHub
               id: build-and-push
@@ -28,5 +32,6 @@ jobs:
                   IMAGE_NAME: "edmilsonexpedito2305/byecar-image"
                   IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
               run: |
-                  docker build -t $IMAGE_NAME:$IMAGE_TAG docker/Dockerfile
+                  cd docker
+                  docker build -t $IMAGE_NAME:$IMAGE_TAG .
                   docker push $IMAGE_NAME:$IMAGE_TAG
