@@ -35,6 +35,8 @@ WORKDIR $APP_DIR
 RUN cd $APP_DIR
 RUN chown www-data:www-data $APP_DIR
 
+RUN ls ../app
+
 COPY --chown=www-data:www-data ../app/ .
 RUN rm -rf vendor
 RUN composer install --no-interaction

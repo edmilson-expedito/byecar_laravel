@@ -33,5 +33,6 @@ jobs:
                   IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
               run: |
                   cd docker
+                  ls ../app
                   docker build --no-cache -t $IMAGE_NAME:$IMAGE_TAG .
                   docker push $IMAGE_NAME:$IMAGE_TAG
