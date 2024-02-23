@@ -24,27 +24,25 @@ RUN docker-php-ext-install zip iconv simplexml pcntl gd fileinfo
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY ./supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./docker/supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ### Supervisor permite monitorar e controlar vários processos (LINUX)
 ### Bastante utilizado para manter processos em Daemon, ou seja, executando em segundo plano
 
-COPY ./php/extra-php.ini "$PHP_INI_DIR/99_extra.ini"
-COPY ./php/extra-php-fpm.conf /etc/php8/php-fpm.d/www.conf
+COPY ./docker/php/extra-php.ini "$PHP_INI_DIR/99_extra.ini"
+COPY ./docker/php/extra-php-fpm.conf /etc/php8/php-fpm.d/www.conf
 
 WORKDIR $APP_DIR
 RUN cd $APP_DIR
 RUN chown www-data:www-data $APP_DIR
 
-RUN ls ../app
-
-COPY --chown=www-data:www-data ../app/ .
+COPY --chown=www-data:www-data ./app .
 RUN rm -rf vendor
 RUN composer install --no-interaction
 
 RUN apt-get install nginx -y
 RUN rm -rf /etc/nginx/sites-enabled/* && rm -rf /etc/nginx/sites-available/*
-COPY ./nginx/sites.conf /etc/nginx/sites-enabled/default.conf
-COPY ./nginx/error.html /var/www/html/error.html
+COPY ./docker/nginx/sites.conf /etc/nginx/sites-enabled/default.conf
+COPY ./docker/nginx/error.html /var/www/html/error.html
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
