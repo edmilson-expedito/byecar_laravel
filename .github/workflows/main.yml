@@ -32,6 +32,5 @@ jobs:
                   IMAGE_NAME: "edmilsonexpedito2305/byecar-image"
                   IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
               run: |
-                  cd docker
-                  docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                  docker compose build -t $IMAGE_NAME:$IMAGE_TAG
                   docker push $IMAGE_NAME:$IMAGE_TAG
