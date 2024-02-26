@@ -36,9 +36,16 @@ RUN cd $APP_DIR
 RUN chown www-data:www-data $APP_DIR
 
 COPY --chown=www-data:www-data ./app .
-RUN chmod -R 775 ./bootstrap/cache
+
+RUN mkdir -p storage/framework/cache
+RUN mkdir -p storage/framework/views
+RUN mkdir -p storage/framework/sessions
+
 RUN rm -rf vendor
 RUN composer install --no-interaction
+
+RUN cp .env.example .env
+RUN php artisan key:generate
 
 RUN apt-get install nginx -y
 RUN rm -rf /etc/nginx/sites-enabled/* && rm -rf /etc/nginx/sites-available/*
@@ -50,5 +57,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN cd /var/www && \
 chown -R www-data:www-data * && \
 chmod -R o+w app
+
+EXPOSE 8080
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
